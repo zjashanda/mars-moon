@@ -440,6 +440,7 @@ result/<MMDDHHMMSS>/
 
 默认忽略的本地产物包括：
 
+- `plan.md`
 - `.venv/`
 - `tmp/`
 - `result/`
@@ -486,6 +487,7 @@ Compress-Archive `
 
 发布 `mars-moon` skill 到 GitHub 前，建议先确认：
 
+- `plan.md` 不随源码一起发布
 - `.gitignore` 已覆盖 `.venv/`、`tmp/`、`result/`、`work/*/`
 - 待发布目录里没有单次调试结果、递归 `artifacts/`、大体积日志
 - 要共享的测试结果已经单独归档

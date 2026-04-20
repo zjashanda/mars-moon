@@ -13,7 +13,6 @@
 - `generated/CSK5062_杜亚窗帘_测试用例.xlsx`
 - `generated/cases.json`
 - `generated/deviceInfo_dooya.json`
-- `plan.md`
 - `references/checkLogic.txt`
 - `references/current-baseline.md`
 - `references/mind.md`
@@ -169,6 +168,7 @@ Then restart Codex.
 - 任何非主动 `reboot`、非主动上下电、非用户明确要求的重启，一旦在用例执行过程中发生，当前用例直接判 `FAIL`，不允许容忍后继续算通过。
 - `CFG-006 / CFG-007 / CFG-008 / CFG-010 / CFG-014` 当前按人工确认项管理，结果口径保持 `NO_METHOD / 人工确认`，不纳入自动化失败闭环。
 - 结果目录必须保留生成物、日志、Excel 结果与执行摘要，保证后续复盘不依赖外部环境。
+- `plan.md` 属于本机执行态文件，用于当前工位持续接手与回写进展；本地保留即可，不作为云端 skill 主体内容发布。
 
 ## 目录内资源
 
@@ -208,4 +208,5 @@ Then restart Codex.
 - 远端 skill 有更新时，默认不会在正式测试中自动拉最新；需要显式执行 `python3 scripts/mars_moon_pipeline.py skills --mode refresh` 或在 `run/full/probe` 时加 `--refresh-codex-skills`。
 - 修改 skill 后，至少完成一次本地 `prepare + build` 验证；影响 runner 或串口链路时，再补一次 `run --dry-run` 或实机验证。
 - Git 发布默认只同步 skill 主体内容，不把 `.venv/`、`tmp/`、`result/`、`work/*/` 这类本地运行产物混到主仓库里。
+- `plan.md` 默认视为本地状态文件，发布 skill 到 GitHub 时不上传；新机器接手时若缺失可按 `AGENTS.md` 自动创建。
 - 单轮测试结果应按 `references/workflow.md` 的“结果归档”说明单独保存；默认保留在本地 workspace/result 目录，分享时优先导出成独立归档，不直接混入源码提交。
