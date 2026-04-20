@@ -924,3 +924,8 @@
 - 进展记录（2026-04-20 18:01）
   - 已完成失败结果聚类复盘：本轮 `60` 个 FAIL 中有 `45` 个集中在“协议不符”，并主要分布于 `CURTAIN 16`、`PHRASE 12`、`CURTAINMODE 6`、`WORKMODE 5`、`CTRL 5`、`UART 3`。
   - 当前判断：这些 FAIL 不是 60 个独立功能坏点，第一大类是同源问题放大——协议断言结果频繁落到上一条 `恢复出厂模式` 的协议 `55 AA 04 01 F0 B0 5B 55` 或空值，导致后续大量依赖主动协议的 case 连锁失败。
+
+- 进展记录（2026-04-20 18:06）
+  - 已按用户要求使用 `skill-git` 将当前 `mars-moon` skill 发布到云端仓库 `zjashanda/mars-moon`。
+  - 为避免把本地 `.venv`、`tmp`、`result`、`work` 运行产物及递归 `artifacts` 一并推上去，本次先生成了干净发布副本 `/tmp/mars-moon-publish`，保留 `SKILL.md`、`AGENTS.md`、`plan.md`、`agents/`、`assets/`、`generated/`、`references/`、`sample/`、`scripts/`、`tools/`、`wavSource/` 等 skill 主体内容，再执行发布。
+  - 发布结果：远端仓库创建成功、内容已推送成功；本地 skill-git 缓存仓库为 `~/.codex/skill-git-repos/mars-moon`，最新提交为 `fad118d Publish mars-moon`，远端 `origin/main` 已同步到同一提交。

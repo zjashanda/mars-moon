@@ -207,3 +207,5 @@ Then restart Codex.
 - 若目标机器本地尚未安装 `listenai-play` / `listenai-laid-installer`，首次执行播报链路时会自动从 Git 下载到 `~/.codex/skills/`；也可以提前执行 `python3 scripts/mars_moon_pipeline.py skills --mode ensure`。
 - 远端 skill 有更新时，默认不会在正式测试中自动拉最新；需要显式执行 `python3 scripts/mars_moon_pipeline.py skills --mode refresh` 或在 `run/full/probe` 时加 `--refresh-codex-skills`。
 - 修改 skill 后，至少完成一次本地 `prepare + build` 验证；影响 runner 或串口链路时，再补一次 `run --dry-run` 或实机验证。
+- Git 发布默认只同步 skill 主体内容，不把 `.venv/`、`tmp/`、`result/`、`work/*/` 这类本地运行产物混到主仓库里。
+- 单轮测试结果应按 `references/workflow.md` 的“结果归档”说明单独保存；默认保留在本地 workspace/result 目录，分享时优先导出成独立归档，不直接混入源码提交。

@@ -434,6 +434,64 @@ result/<MMDDHHMMSS>/
 - `artifacts/` 中的固件副本和烧录日志
 - `result/` 中的正式执行证据
 
+### 6.1 源码与结果分离
+
+`mars-moon` 仓库默认只保存 skill 主体，不直接提交本地运行产物。
+
+默认忽略的本地产物包括：
+
+- `.venv/`
+- `tmp/`
+- `result/`
+- `work/*/` 下的单次 workspace、调试目录和全链路结果目录
+- 各类串口原始日志、tool log、临时文件
+
+保留在仓库内的内容应以“可复用资产”为主：
+
+- `SKILL.md`
+- `references/`
+- `scripts/`
+- `tools/`
+- `sample/`
+- `assets/`
+- `generated/` 中需要随 skill 一起保留的基线生成物
+- `work/` 根目录下少量长期方法文档或分析文档
+
+### 6.2 结果怎么归档
+
+如果某一轮执行结果需要长期保留或发给别人复盘，建议按下面方式处理：
+
+1. 先保留原始结果目录，不改动其中的 `execution_summary.md`、`requirement_status.md`、`testResult.xlsx`、`tool.log`、`serial_raw.log`、`protocol_raw.log`。
+2. 以“单轮结果目录”为单位做归档，不要把多轮结果混在一起。
+3. 优先把结果目录导出到仓库外的独立归档位置，或打包成单独压缩包分享，而不是直接提交到 skill 主分支。
+4. 若必须在仓库内留痕，优先只提交摘要文档或结论 Markdown，不提交整轮原始日志和大体积结果目录。
+
+Linux 示例：
+
+```bash
+tar -czf marsmoon-result-20260420-174910.tgz \
+  -C ./work/fullchain-protocol-uart2-20260420-1456 \
+  .
+```
+
+Windows PowerShell 示例：
+
+```powershell
+Compress-Archive `
+  -Path .\work\fullchain-protocol-uart2-20260420-1456\* `
+  -DestinationPath .\marsmoon-result-20260420-174910.zip
+```
+
+### 6.3 发布到 GitHub 前的建议
+
+发布 `mars-moon` skill 到 GitHub 前，建议先确认：
+
+- `.gitignore` 已覆盖 `.venv/`、`tmp/`、`result/`、`work/*/`
+- 待发布目录里没有单次调试结果、递归 `artifacts/`、大体积日志
+- 要共享的测试结果已经单独归档
+
+如果本地目录已经积累了很多实机结果，优先先做一个“干净发布副本”再推送，避免把历史结果目录和递归归档一并带上云端。
+
 ## 7. 迁移建议
 
 把整个 `mars-moon` 目录复制到新机器后，只需要保证：

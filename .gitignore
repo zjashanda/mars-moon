@@ -1,13 +1,28 @@
 # Python/cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 .venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
 
 # Local runtime outputs
-result/
 tmp/
-work/
+result/
+artifacts/
+work/*/
+!work/*.md
+!work/*.json
+!work/*.txt
+
+# Logs and temporary archives
 *.log
+*.tmp
+*.temp
 
 # OS/editor
 .DS_Store
