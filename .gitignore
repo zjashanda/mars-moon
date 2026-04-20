@@ -1,0 +1,13 @@
+# Python/cache
+__pycache__/
+*.pyc
+.venv/
+
+# Local runtime outputs
+result/
+tmp/
+work/
+*.log
+
+# OS/editor
+.DS_Store

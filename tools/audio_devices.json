@@ -1,0 +1,24 @@
+{
+  "windows": {
+    "playback_device_key": "",
+    "default_device_mode": "auto",
+    "use_default_when_unavailable": true,
+    "last_route_mode": "",
+    "last_success_at": "",
+    "last_verified_device_key": "",
+    "last_verified_device_name": "",
+    "last_verified_backend_target": "",
+    "last_error": ""
+  },
+  "linux": {
+    "playback_device_key": "VID_8765&PID_5678:USB_0_4_3_1_0",
+    "default_device_mode": "auto",
+    "use_default_when_unavailable": true,
+    "last_route_mode": "device_key",
+    "last_success_at": "2026-04-20 17:48:33",
+    "last_verified_device_key": "VID_8765&PID_5678:USB_0_4_3_1_0",
+    "last_verified_device_name": "CSK6012Combo",
+    "last_verified_backend_target": "plughw:1,0",
+    "last_error": ""
+  }
+}

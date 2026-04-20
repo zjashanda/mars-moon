@@ -1,0 +1,4 @@
+interface:
+  display_name: "marsMoon"
+  short_description: "自包含离线语音需求转用例并执行实机测试的一体化工作流"
+  default_prompt: "Use $mars-moon to turn a requirement doc, word table, and tone file into executable cases and run the bundled pipeline."

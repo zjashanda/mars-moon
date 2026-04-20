@@ -1,0 +1,22 @@
+{
+  "windows": {
+    "ctrl_port": "COM15",
+    "burn_port": "COM14",
+    "log_port": "COM14",
+    "protocol_port": "COM13",
+    "ctrl_baud": 115200,
+    "log_baud": 115200,
+    "protocol_baud": 9600,
+    "burn_baud": 1500000
+  },
+  "linux": {
+    "ctrl_port": "/dev/ttyACM4",
+    "burn_port": "/dev/ttyACM0",
+    "log_port": "/dev/ttyACM0",
+    "protocol_port": "/dev/ttyACM2",
+    "ctrl_baud": 115200,
+    "log_baud": 115200,
+    "protocol_baud": 9600,
+    "burn_baud": 460800
+  }
+}
