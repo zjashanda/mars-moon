@@ -4,7 +4,46 @@
 
 ## Skill layout
 
+- `.git/COMMIT_EDITMSG`
+- `.git/HEAD`
+- `.git/config`
+- `.git/description`
+- `.git/hooks/applypatch-msg.sample`
+- `.git/hooks/commit-msg.sample`
+- `.git/hooks/fsmonitor-watchman.sample`
+- `.git/hooks/post-update.sample`
+- `.git/hooks/pre-applypatch.sample`
+- `.git/hooks/pre-commit.sample`
+- `.git/hooks/pre-merge-commit.sample`
+- `.git/hooks/pre-push.sample`
+- `.git/hooks/pre-rebase.sample`
+- `.git/hooks/pre-receive.sample`
+- `.git/hooks/prepare-commit-msg.sample`
+- `.git/hooks/push-to-checkout.sample`
+- `.git/hooks/update.sample`
+- `.git/index`
+- `.git/info/exclude`
+- `.git/logs/HEAD`
+- `.git/logs/refs/heads/master`
+- `.git/objects/46/237d55059391e6ad56aed56168ab5cd1038c33`
+- `.git/objects/49/de187409512b6cc2f4f3003cee29d4d230cb8f`
+- `.git/objects/60/15afeb90a54c9bd42cdc028e85f62f6c90081a`
+- `.git/objects/96/881a822a1945d68e205a10d988a32f954b72e7`
+- `.git/objects/9f/35cd3861281f2d148faa462b2d9f96aeac2316`
+- `.git/objects/b7/75b7a1497066d588ba37783c88bbd5b3096aab`
+- `.git/objects/bc/5292e7921e8bed66ff5bfb3635af75a908285d`
+- `.git/objects/c0/13cdb98059e6fd9f64040a3ff44f62a08b3056`
+- `.git/objects/eb/858e10559fc61173bc3f17f6849f808db57e96`
+- `.git/objects/ec/769c4d37050f386e526fe598fb2a2f21c6e611`
+- `.git/objects/ed/bd99ab84cc729e89a1f19f923ca379d34955a9`
+- `.git/objects/f8/29dbd50e0fac6b4852df2e841b5f3d5085ae35`
+- `.git/objects/fd/751826bd2ffc0a552e8cfbf7edd498938e1b16`
+- `.git/refs/heads/master`
 - `.gitignore`
+- `.venv/bin/python`
+- `.venv/bin/python3`
+- `.venv/bin/python3.12`
+- `.venv/pyvenv.cfg`
 - `AGENTS.md`
 - `SKILL.md`
 - `agents/openai.yaml`
@@ -13,12 +52,14 @@
 - `generated/CSK5062_杜亚窗帘_测试用例.xlsx`
 - `generated/cases.json`
 - `generated/deviceInfo_dooya.json`
+- `plan.md`
 - `references/checkLogic.txt`
 - `references/current-baseline.md`
+- `references/masr-pillar.md`
 - `references/mind.md`
 - `references/test-case-mapping-draft.md`
-- `references/test-plan-draft.md`
 - `references/workflow.md`
+- `references/需求功能验证设计方法.md`
 - `sample/__init__.py`
 - `sample/voiceTestLite.py`
 - `scripts/mars_moon_pipeline.py`
@@ -92,6 +133,13 @@
 - `wavSource/配对遥控器.mp3`
 - `wavSource/阳台窗帘.mp3`
 - `wavSource/餐厅窗帘.mp3`
+- `work/analysis-20260409-requirement-case-gap.md`
+- `work/analysis-20260416-functional-judgement-matrix.md`
+- `work/coverage_matrix.md`
+- `work/normalized_spec.json`
+- `work/requirement-status-20260409.md`
+- `work/source_inventory.md`
+- `work/tone_map.json`
 
 ## Install the skill
 
@@ -129,9 +177,11 @@ Then restart Codex.
 
 1. 读取 `references/workflow.md`，确认当前执行目标与命令形式。
 2. 读取 `references/mind.md`，理解需求拆解、状态机分析和用例生成方法。
-3. 根据用户目标选择 `prepare`、`build`、`burn`、`run`、`probe` 或 `full`。
-4. 优先调用 `scripts/mars_moon_pipeline.py`，不要绕回其他 skill 或外部仓库脚本。
-5. 如果要提前检查或刷新外部播报 skill，优先使用 `python3 scripts/mars_moon_pipeline.py skills --mode ensure|refresh`。
+3. 读取 `references/需求功能验证设计方法.md`，确认当前需求应如何拆成功能点、验证方案、断言和归因。
+4. 若需要参考“需求提炼 + 测试方案”的完整样板，再读取 `references/masr-pillar.md`。
+5. 根据用户目标选择 `prepare`、`build`、`burn`、`run`、`probe` 或 `full`。
+6. 优先调用 `scripts/mars_moon_pipeline.py`，不要绕回其他 skill 或外部仓库脚本。
+7. 如果要提前检查或刷新外部播报 skill，优先使用 `python3 scripts/mars_moon_pipeline.py skills --mode ensure|refresh`。
 
 ## 标准闭环
 
@@ -150,8 +200,12 @@ Then restart Codex.
 - `burn`
   - 在 workspace 内安装并执行当前 bundle 自带的烧录工具包。
   - 使用当前平台默认硬件口径：Windows 为 `COM15 @ 115200`、`COM14 @ 115200`、`COM13 @ 9600`；Linux 为 `/dev/ttyACM0 @ 115200`、`/dev/ttyACM1 @ 115200`、`/dev/ttyACM2 @ 9600`。
+  - 若涉及新固件，烧录前必须把待烧录文件复制到实际烧录目录，先删除旧 `app.bin`，再将当前固件统一命名为 `app.bin`，确保目录内固件唯一。
+  - 进入烧录模式时必须完整执行“断电 -> 进 boot -> 上电 -> 下 boot”；任一步失败都必须整套重来，不允许从中间续接。
+  - 烧录完成后必须连接日志串口重新上电并观察 `20s`，确认无自动重启、重复启动、异常复位后，才能进入后续测试。
 - `run`
   - 做串口预检、日志恢复、语音执行、失败重跑与结果归档。
+  - 正式执行前必须先过最小可测性验证：设备无反复重启、默认唤醒词可唤醒、基础命令词可识别、有对应日志与响应播报；若该动作应下发主动协议，则协议串口上也应能观察到实收协议。
 - `probe`
   - 将参数透传给 workspace 内的 `tools/dooya_link_probe.py` 做链路确认。
 
@@ -159,9 +213,14 @@ Then restart Codex.
 
 - 所有 Mars 相关流程都应在当前 `mars-moon` bundle 或它准备出的 workspace 内执行。
 - 不要把 `references/` 文档写成依赖其他机器绝对路径的说明。
+- 正式测试前，先过两道门禁：
+  1. 若涉及烧录，先完成烧录后 `20s` 健康检查；
+  2. 再完成最小可测性验证。
+- 如果烧录后健康检查失败，或最小可测性验证失败，都要立即停止测试并上报，不要继续跑全链路。
 - 设置类命令的完整闭环应是：先唤醒设备，再进入设置模式，最后播报目标词完成设置，并校验设置结果已经生效。
 - 已确认的设置态口径要优先于旧需求原文：在 `WAKEWORD / WORKMODE / CURTAINMODE` 设置窗口内，像 `打开窗帘` 这类普通控制词不能默认当成“无效词”；应优先验证“控制命令可执行，且设置窗口仍可继续完成后续设置”。
 - 为避免假 PASS，正向控制命令默认要做“播报 + 协议”双命中校验；设置成功类步骤默认要补 `configSaved=save config success` 和后置行为验证，不能只看一条播报就判通过。
+- 只要现场存在独立协议串口，主动协议和被动协议都优先用协议串口作为主断言来源；日志中的 `send msg` / `recv msg` 只作为辅助证据。
 - 用例级 `setup_action` / `always_run` 恢复动作必须与主断言隔离，避免恢复默认状态的协议和播报污染主 case 结果摘要。
 - 每次检测到设备重启后，都要先恢复日志等级并确认有日志输出，再继续后续测试。
 - 主动 `reboot`、主动上下电不计入异常重启阈值；正常语音执行过程中发生的被动重启才计入异常重启。
@@ -195,8 +254,18 @@ Then restart Codex.
   - 当前 bundle 已验证基线。
 - `references/mind.md`
   - 需求理解、逻辑分析和用例生成方法沉淀。
+- `references/需求功能验证设计方法.md`
+  - 当前最完整的方法论文档，包含：需求拆解、功能点验证方案、最小可测性门禁、烧录健康检查、结果归因模板。
+- `references/masr-pillar.md`
+  - 当前项目的“需求内容提炼 + 测试方案示例”组合样板，可供其他 skill 复用。
 - `references/checkLogic.txt`
   - 用例生成时需要对齐的检查逻辑补充。
+- `work/requirement-status-20260409.md`
+  - 历史主需求状态汇总，可用于快速了解哪些需求已经通过、哪些仍异常或验证不足。
+- `work/analysis-20260409-requirement-case-gap.md`
+  - 历史需求/用例缺口分析，适合在重构用例前先复核问题归因。
+- `work/analysis-20260416-functional-judgement-matrix.md`
+  - 功能层 vs 数值层的断言口径矩阵，适合在调整 runner 断言前先对齐。
 - `plan.md`
   - 当前机器、本轮验证结论和已确认业务口径；每次继续前都应先同步阅读并回写最新进展。
 
