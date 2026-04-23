@@ -1,0 +1,99 @@
+{
+  "items": [
+    {
+      "name": "TONE_ID_0",
+      "id": 0,
+      "text": "在呢"
+    },
+    {
+      "name": "TONE_ID_1",
+      "id": 1,
+      "text": "好的"
+    },
+    {
+      "name": "TONE_ID_2",
+      "id": 2,
+      "text": "再见"
+    },
+    {
+      "name": "TONE_ID_3",
+      "id": 3,
+      "text": "你好,欢迎使用杜亚窗帘"
+    },
+    {
+      "name": "TONE_ID_4",
+      "id": 4,
+      "text": "音量已最大"
+    },
+    {
+      "name": "TONE_ID_5",
+      "id": 5,
+      "text": "音量已最小"
+    },
+    {
+      "name": "TONE_ID_6",
+      "id": 6,
+      "text": "开始配对"
+    },
+    {
+      "name": "TONE_ID_7",
+      "id": 7,
+      "text": "配对成功"
+    },
+    {
+      "name": "TONE_ID_8",
+      "id": 8,
+      "text": "配对失败"
+    },
+    {
+      "name": "TONE_ID_9",
+      "id": 9,
+      "text": "进入设置模式"
+    },
+    {
+      "name": "TONE_ID_10",
+      "id": 10,
+      "text": "设置成功"
+    },
+    {
+      "name": "TONE_ID_11",
+      "id": 11,
+      "text": "设置失败"
+    },
+    {
+      "name": "TONE_ID_12",
+      "id": 12,
+      "text": "唤醒词设置超时"
+    },
+    {
+      "name": "TONE_ID_13",
+      "id": 13,
+      "text": "进入设置模式"
+    },
+    {
+      "name": "TONE_ID_14",
+      "id": 14,
+      "text": "设置成功"
+    },
+    {
+      "name": "TONE_ID_15",
+      "id": 15,
+      "text": "滴声"
+    },
+    {
+      "name": "TONE_ID_16",
+      "id": 16,
+      "text": "正在设置中"
+    },
+    {
+      "name": "TONE_ID_17",
+      "id": 17,
+      "text": "你好,欢迎使用向日葵窗帘"
+    },
+    {
+      "name": "TONE_ID_18",
+      "id": 18,
+      "text": "请再说一遍"
+    }
+  ]
+}

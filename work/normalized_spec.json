@@ -1,0 +1,4019 @@
+{
+  "generated_at": "2026-04-16T16:05:07",
+  "requirement": {
+    "project": {
+      "project_name": "CSK5062杜亚窗帘",
+      "branch_name": "csk5062_dooya_curtain",
+      "chip_model": "CSK5062",
+      "firmware_version": "VCC.03.02.00.24"
+    },
+    "defaults": {
+      "wake_timeout_s": 20,
+      "volume_levels": 4,
+      "default_volume": 3,
+      "wake_word_power_retained": false,
+      "volume_power_retained": false,
+      "default_work_mode": "语音模式",
+      "default_curtain_mode": "窗帘模式",
+      "protocol_uart": "/dev/ttyACM2",
+      "protocol_baudrate": 9600,
+      "log_uart": "/dev/ttyACM0",
+      "log_baudrate": 115200
+    },
+    "raw_text": "# 纯离线项目自动开发需求说明\n\n## 一、项目信息\n1. 项目名称：CSK5062杜亚窗帘\n2. 分支名称：csk5062_dooya_curtain\n3. 芯片型号：CSK5062\n4. 固件版本：VCC.03.02.00.24\n\n## 二、基础配置\n### 1. 固件配置\n- 唤醒时长: 20s\n- 音量档位: 4\n- 初始化默认音量: 3\n- 最小音量下溢提示播报: 音量已最小\n- 最大音量上溢提示播报: 音量已最大\n\n### 2. 音频输入配置\n- mic模拟增益: 32\n- mic数字增益: 2\n\n### 3. 串口配置\n- 协议串口: UART1、波特率9600\n- 日志串口: UART0、波特率115200\n\n### 4. 掉电配置\t\n- 唤醒词掉电保存: 否\n- 音量掉电保存: 否\n\n### 5. 播报配置\n- 合成音频发音人: 叶子\n\n## 三、需求补充\n### 1. 功能类型：恢复出厂设置\n1. 需恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型\n\n### 2. 功能类型：设置唤醒词\n1. 默认唤醒词为”你好杜亚”，一直生效\n2. 其他所有唤醒词默认不能唤醒，通过触发此功能指令后才能生效\n3. 进入设置唤醒词模式后，若用户说了具体唤醒词，这此唤醒词立即生效并退出设置唤醒词模式\n4. 进入设置唤醒词模式后，若用户说了非唤醒词则不响应\n5. 进入设置唤醒词模式后，若超时退出识别模式，则也自动退出设置唤醒词模式\n\n### 3. 功能类型：设置工作模式\n1. 工作模式分为语音模式和嘀嗒模式，语音模式所有提示音正常播报，嘀嗒模式所有提示音播报嘀（音效），默认为语音模式\n2. 未进入设置工作模式，用户说语音模式或嘀嗒模式不响应\n3. 进入设置工作模式后，若用户说了语音模式或嘀嗒模式，则切换到对应模式并退出设置工作模式\n4. 进入设置工作模式后，若用户说非语音模式或嘀嗒模式命令则不响应\n5. 进入设置工作模式后，若超时退出识别模式，则也自动退出工作模式\n\n### 4. 功能类型：设置窗帘模式\n1. 窗帘模式分为：窗帘模式、纱帘/窗纱模式、布帘模式三种，默认为窗帘模式一直生效\n2. 只有对应模式下相关的窗帘类型命令词才能响应，例如：窗帘模式下，可响应的命令词有打开窗帘、关闭窗帘和停止窗帘，不可响应的命令词有：打开布帘、关闭纱帘、停止窗纱等\n3. 未进入设置窗帘模式，用户说纱帘/窗纱模式、布帘模式不响应\n4. 进入设置窗帘模式后，若用户说纱帘/窗纱模式、布帘模式则切换到对应窗帘类型并退出设置窗帘模式\n5. 进入设置窗帘模式后，若用户说纱帘/窗纱模式、布帘模式命令则不响应\n6. 进入设置窗帘模式后，若超时退出识别模式，则也自动退出设置窗帘模式",
+    "supplement_text": "你写的用例还是有点问题，从开发需求文档说明来看，主要测试点如下\n1.唤醒时长需要验证数值，通过播报音频唤醒设备后等待超时 记录超时时间来判断是否符合需求。\n2.音量档位通过不停的调节音量来测试，记住音量可以变化的范围。如果是需求配置的个数则正确。\n3.初始化音量通过烧录后或者回复出厂设置等手段来查看默认音量是否正确\n4.最大音量和最小音量参考2调节后查看播报id\n5.协议串口和日志串口，协议串口就检测协议输出的\n6.掉电配置需要结合硬断电，先设置好唤醒词和音量，设置的要和默认值不一致，最后掉电后检测唤醒词和音量是否恢复。保存即断电不变，不保存则断电变默认值\n7.恢复出厂设置会恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型，需要单独验证\n7.1唤醒词验证使用默认唤醒词，此时验证设置过的唤醒词是否生效即可，不生效说明恢复出厂了。\n7.2恢复出厂后音量恢复默认值\n7.3默认工作模式可通过播报id判断，滴答模式和正常的工作模式的响应播报id不一样。\n7.4窗帘模式需要通过测试哪个窗帘控制能响应就是处于什么模式下，与确认模式判断即可。\n8.默认唤醒词一直生效，如果测试命令词或需要设备进入识别模式时，可使用默认唤醒词唤醒设备\n9.设置唤醒词验证逻辑，先唤醒设备，在播报设置唤醒词，确定识别正确后对比播报id表可知是否设置正确，一次播报除默认唤醒词外的其他唤醒词，待识别后，确定切换后，在使用刚设置的唤醒词进行唤醒，连续三次。确认设置的唤醒词生效\n此时还要验证除默认唤醒词和设置唤醒词是否生效外其他唤醒词是否生效，若生效则失败，同时还要查看唤醒超时时间是否为设置时间\n10.设置窗帘模式，窗帘模式分多种。默认的窗帘模式一直生效，比如窗帘模式是默认的，说打开窗帘可以响应播报，说打开纱帘则不响应播报。其他的模式需要设置才能生效。\n设置窗帘模式：唤醒后，设置窗帘模式识别后对比播报id表可知是否设置正确识别后在播报窗纱模式或其他模式，等待设置成功的响应播报后，使用该模式的对应命令词去交互即可，即\n。\n11.设置工作模式，工作模式分语音和滴答模式，其根本区别就是响应播报id不一样，滴答模式使用一种响应播报id，语音模式的响应播报都不一样。所以区分这个模式很简单。\n设置工作模式：唤醒后，播报设置工作模式，识别后播报工作模式，或者滴答模式，识别正确后会响应播报id。对比播报id表可知是否设置正确\n三个设置模式均有超时时间，如果超时时间内没有播报对应的设置命令，则设置失败，使用设置前的功能。这是我补充的逻辑，你把这个加上，附件是播报id和对应响应表，你重新生成一个用例和skill"
+  },
+  "runtime": {
+    "log_port": {
+      "port": "/dev/ttyACM0",
+      "baudrate": 115200
+    },
+    "protocol_port": {
+      "port": "/dev/ttyACM2",
+      "baudrate": 9600,
+      "baudrate_source": "requirement_doc",
+      "verify_in_smoke": true
+    },
+    "loglevel_command": "loglevel 4",
+    "reboot_command": "reboot"
+  },
+  "modules": [
+    {
+      "module": "CONFIG",
+      "requirements": [
+        "唤醒时长为 20s",
+        "音量档位数为 4",
+        "初始化默认音量为 3",
+        "最小音量下溢提示播报为“音量已最小”",
+        "最大音量上溢提示播报为“音量已最大”",
+        "mic 模拟增益为 32",
+        "mic 数字增益为 2",
+        "协议串口内部编号为 UART1",
+        "协议串口波特率为 9600",
+        "日志串口内部编号为 UART0",
+        "日志串口波特率为 115200",
+        "唤醒词掉电保存为 否",
+        "音量掉电保存为 否",
+        "合成音频发音人为叶子"
+      ],
+      "requirement_ids": [
+        "CFG-001",
+        "CFG-002",
+        "CFG-003",
+        "CFG-004",
+        "CFG-005",
+        "CFG-006",
+        "CFG-007",
+        "CFG-008",
+        "CFG-009",
+        "CFG-010",
+        "CFG-011",
+        "CFG-012",
+        "CFG-013",
+        "CFG-014"
+      ]
+    },
+    {
+      "module": "BOOT",
+      "requirements": [
+        "硬上下电后欢迎语正确播报",
+        "重启后日志链路恢复",
+        "重启后默认唤醒词仍可用"
+      ],
+      "requirement_ids": [
+        "DER-BOOT-001",
+        "DER-BOOT-002",
+        "DER-BOOT-003"
+      ]
+    },
+    {
+      "module": "BASE",
+      "requirements": [
+        "默认唤醒词可进入交互态",
+        "超时退出后不重新唤醒的直接命令不响应",
+        "超时退出后重新唤醒可恢复正常命令响应"
+      ],
+      "requirement_ids": [
+        "DER-BASE-001",
+        "DER-BASE-002",
+        "DER-BASE-003"
+      ]
+    },
+    {
+      "module": "VOL",
+      "requirements": [
+        "增大音量命令单步反馈正确",
+        "减小音量命令单步反馈正确"
+      ],
+      "requirement_ids": [
+        "DER-VOL-001",
+        "DER-VOL-002"
+      ]
+    },
+    {
+      "module": "UART",
+      "requirements": [
+        "稳定命令词触发协议发送可被协议口接收",
+        "日志口包含 asrKw、playId 等关键字段",
+        "清除遥控器链路具备稳定日志与协议可观测性"
+      ],
+      "requirement_ids": [
+        "DER-UART-001",
+        "DER-UART-002",
+        "DER-UART-003"
+      ]
+    },
+    {
+      "module": "POWER",
+      "requirements": [
+        "上下电后日志恢复且设备回到可交互状态"
+      ],
+      "requirement_ids": [
+        "DER-POWER-001"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirements": [
+        "恢复出厂后恢复默认唤醒词",
+        "恢复出厂后恢复默认音量",
+        "恢复出厂后恢复默认工作模式（语音模式）",
+        "恢复出厂后恢复默认窗帘类型（窗帘模式）",
+        "恢复出厂入口可达"
+      ],
+      "requirement_ids": [
+        "FACT-001",
+        "FACT-002",
+        "FACT-003",
+        "FACT-004",
+        "DER-FACT-001"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirements": [
+        "默认唤醒词“你好杜亚”一直生效",
+        "其他候选唤醒词默认不能唤醒，通过设置后才能生效",
+        "设置唤醒词模式下说具体唤醒词后立即生效并退出设置模式",
+        "设置唤醒词模式下说普通控制词可正常响应且不退出设置",
+        "设置唤醒词模式超时后自动退出"
+      ],
+      "requirement_ids": [
+        "WAKE-001",
+        "WAKE-002",
+        "WAKE-003",
+        "WAKE-004",
+        "WAKE-005"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirements": [
+        "工作模式分为语音模式和嘀嗒模式，默认工作模式为 语音模式",
+        "未进入设置工作模式时，说语音模式或嘀嗒模式不响应",
+        "进入设置工作模式后，说语音模式或嘀嗒模式可切换到对应模式并退出设置",
+        "进入设置工作模式后，说普通控制词可正常响应且不影响后续模式设置",
+        "设置工作模式超时后自动退出",
+        "工作模式设置入口可达"
+      ],
+      "requirement_ids": [
+        "WORK-001",
+        "WORK-002",
+        "WORK-003",
+        "WORK-004",
+        "WORK-005",
+        "DER-WORK-001"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirements": [
+        "窗帘模式分为窗帘模式、纱帘/窗纱模式、布帘模式，默认窗帘模式为 窗帘模式",
+        "只有对应模式下相关的窗帘类型命令词才能响应",
+        "未进入设置窗帘模式时，说纱帘/窗纱模式、布帘模式不响应",
+        "进入设置窗帘模式后，说纱帘/窗纱模式、布帘模式可切换到对应窗帘类型并退出设置",
+        "进入设置窗帘模式后，说普通控制词可正常响应且不影响后续模式设置",
+        "设置窗帘模式超时后自动退出",
+        "窗帘模式设置入口可达"
+      ],
+      "requirement_ids": [
+        "CURTAIN-001",
+        "CURTAIN-002",
+        "CURTAIN-003",
+        "CURTAIN-004",
+        "CURTAIN-005",
+        "CURTAIN-006",
+        "DER-CURTAINMODE-001"
+      ]
+    },
+    {
+      "module": "CURTAIN",
+      "requirements": [
+        "默认窗帘模式下默认窗帘控制词可生效",
+        "同意图同义词触发协议一致",
+        "模式切换后对应模式控制词可生效",
+        "不匹配当前模式的控制词不响应"
+      ],
+      "requirement_ids": [
+        "DER-CURTAIN-001",
+        "DER-CURTAIN-002",
+        "DER-CURTAIN-003",
+        "DER-CURTAIN-004"
+      ]
+    },
+    {
+      "module": "PHRASE",
+      "requirements": [
+        "词条按语义组执行，不是逐行平铺",
+        "同义词按等价意图集合校验",
+        "连续未识别后可重唤醒并继续剩余词条"
+      ],
+      "requirement_ids": [
+        "DER-PHRASE-001",
+        "DER-PHRASE-002",
+        "DER-PHRASE-003"
+      ]
+    },
+    {
+      "module": "SELECTOR",
+      "requirements": [
+        "候选唤醒词可被设置并稳定唤醒",
+        "未选中的候选唤醒词不应误唤醒",
+        "切换候选唤醒词后旧候选应失效"
+      ],
+      "requirement_ids": [
+        "DER-SELECTOR-001",
+        "DER-SELECTOR-002",
+        "DER-SELECTOR-003"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirements": [
+        "遥控器配对入口可达并发送配对协议",
+        "窗口内支持配对成功被动播报",
+        "窗口内支持配对失败被动播报",
+        "配对窗口超时后协议注入无效",
+        "清除遥控器链路完整"
+      ],
+      "requirement_ids": [
+        "DER-CTRL-001",
+        "DER-CTRL-002",
+        "DER-CTRL-003",
+        "DER-CTRL-004",
+        "DER-CTRL-005"
+      ]
+    }
+  ],
+  "requirement_catalog": [
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-001",
+      "requirement": "唤醒时长为 20s",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "唤醒时长: 20s",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-002",
+      "requirement": "音量档位数为 4",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "音量档位: 4",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-003",
+      "requirement": "初始化默认音量为 3",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "初始化默认音量: 3",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-004",
+      "requirement": "最小音量下溢提示播报为“音量已最小”",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "最小音量下溢提示播报: 音量已最小",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-005",
+      "requirement": "最大音量上溢提示播报为“音量已最大”",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "最大音量上溢提示播报: 音量已最大",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-006",
+      "requirement": "mic 模拟增益为 32",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 音频输入配置",
+      "source_text": "mic模拟增益: 32",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-007",
+      "requirement": "mic 数字增益为 2",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 音频输入配置",
+      "source_text": "mic数字增益: 2",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-008",
+      "requirement": "协议串口内部编号为 UART1",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 串口配置",
+      "source_text": "协议串口: UART1",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-009",
+      "requirement": "协议串口波特率为 9600",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 串口配置",
+      "source_text": "协议串口: UART1、波特率9600",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-010",
+      "requirement": "日志串口内部编号为 UART0",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 串口配置",
+      "source_text": "日志串口: UART0",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-011",
+      "requirement": "日志串口波特率为 115200",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 串口配置",
+      "source_text": "日志串口: UART0、波特率115200",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-012",
+      "requirement": "唤醒词掉电保存为 否",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 掉电配置",
+      "source_text": "唤醒词掉电保存: 否",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-013",
+      "requirement": "音量掉电保存为 否",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 掉电配置",
+      "source_text": "音量掉电保存: 否",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-014",
+      "requirement": "合成音频发音人为叶子",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 播报配置",
+      "source_text": "合成音频发音人: 叶子",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "FACT-001",
+      "requirement": "恢复出厂后恢复默认唤醒词",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 恢复出厂设置",
+      "source_text": "需恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "FACT-002",
+      "requirement": "恢复出厂后恢复默认音量",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 恢复出厂设置",
+      "source_text": "需恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "FACT-003",
+      "requirement": "恢复出厂后恢复默认工作模式（语音模式）",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 恢复出厂设置",
+      "source_text": "需恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "FACT-004",
+      "requirement": "恢复出厂后恢复默认窗帘类型（窗帘模式）",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 恢复出厂设置",
+      "source_text": "需恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-001",
+      "requirement": "默认唤醒词“你好杜亚”一直生效",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置唤醒词",
+      "source_text": "默认唤醒词为“你好杜亚”，一直生效",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-002",
+      "requirement": "其他候选唤醒词默认不能唤醒，通过设置后才能生效",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置唤醒词",
+      "source_text": "其他所有唤醒词默认不能唤醒，通过触发此功能指令后才能生效",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-003",
+      "requirement": "设置唤醒词模式下说具体唤醒词后立即生效并退出设置模式",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置唤醒词",
+      "source_text": "进入设置唤醒词模式后，若用户说了具体唤醒词，这此唤醒词立即生效并退出设置唤醒词模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-004",
+      "requirement": "设置唤醒词模式下说普通控制词可正常响应且不退出设置",
+      "source_kind": "user_confirmed",
+      "source_section": "用户确认 / 2026-04-13 / 设置唤醒词",
+      "source_text": "设置唤醒词模式内，普通控制词本来就会响应；执行控制后仍应保持在设置窗口内，可继续完成唤醒词设置",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-005",
+      "requirement": "设置唤醒词模式超时后自动退出",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置唤醒词",
+      "source_text": "进入设置唤醒词模式后，若超时退出识别模式，则也自动退出设置唤醒词模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-001",
+      "requirement": "工作模式分为语音模式和嘀嗒模式，默认工作模式为 语音模式",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置工作模式",
+      "source_text": "工作模式分为语音模式和嘀嗒模式，语音模式所有提示音正常播报，嘀嗒模式所有提示音播报嘀（音效），默认为语音模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-002",
+      "requirement": "未进入设置工作模式时，说语音模式或嘀嗒模式不响应",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置工作模式",
+      "source_text": "未进入设置工作模式，用户说语音模式或嘀嗒模式不响应",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-003",
+      "requirement": "进入设置工作模式后，说语音模式或嘀嗒模式可切换到对应模式并退出设置",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置工作模式",
+      "source_text": "进入设置工作模式后，若用户说了语音模式或嘀嗒模式，则切换到对应模式并退出设置工作模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-004",
+      "requirement": "进入设置工作模式后，说普通控制词可正常响应且不影响后续模式设置",
+      "source_kind": "user_confirmed",
+      "source_section": "用户确认 / 2026-04-13 / 设置工作模式",
+      "source_text": "设置工作模式窗口内，普通控制词本来就会响应；执行控制后仍应保持可继续完成模式设置",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-005",
+      "requirement": "设置工作模式超时后自动退出",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置工作模式",
+      "source_text": "进入设置工作模式后，若超时退出识别模式，则也自动退出工作模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-001",
+      "requirement": "窗帘模式分为窗帘模式、纱帘/窗纱模式、布帘模式，默认窗帘模式为 窗帘模式",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "窗帘模式分为：窗帘模式、纱帘/窗纱模式、布帘模式三种，默认为窗帘模式一直生效",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-002",
+      "requirement": "只有对应模式下相关的窗帘类型命令词才能响应",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "只有对应模式下相关的窗帘类型命令词才能响应，例如：窗帘模式下，可响应的命令词有打开窗帘、关闭窗帘和停止窗帘，不可响应的命令词有：打开布帘、关闭纱帘、停止窗纱等",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-003",
+      "requirement": "未进入设置窗帘模式时，说纱帘/窗纱模式、布帘模式不响应",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "未进入设置窗帘模式，用户说纱帘/窗纱模式、布帘模式不响应",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-004",
+      "requirement": "进入设置窗帘模式后，说纱帘/窗纱模式、布帘模式可切换到对应窗帘类型并退出设置",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "进入设置窗帘模式后，若用户说纱帘/窗纱模式、布帘模式则切换到对应窗帘类型并退出设置窗帘模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-005",
+      "requirement": "进入设置窗帘模式后，说普通控制词可正常响应且不影响后续模式设置",
+      "source_kind": "user_confirmed",
+      "source_section": "用户确认 / 2026-04-13 / 设置窗帘模式",
+      "source_text": "设置窗帘模式窗口内，普通控制词本来就会响应；执行控制后仍应保持可继续完成模式设置",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-006",
+      "requirement": "设置窗帘模式超时后自动退出",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "进入设置窗帘模式后，若超时退出识别模式，则也自动退出设置窗帘模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BOOT",
+      "requirement_id": "DER-BOOT-001",
+      "requirement": "硬上下电后欢迎语正确播报",
+      "source_kind": "tone_reference",
+      "source_section": "tone.h / 历史参考用例",
+      "source_text": "TONE_ID_3 = 你好,欢迎使用杜亚窗帘",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BOOT",
+      "requirement_id": "DER-BOOT-002",
+      "requirement": "重启后日志链路恢复",
+      "source_kind": "historical_runner",
+      "source_section": "执行基线",
+      "source_text": "重启后日志恢复且设备回到可交互状态",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BOOT",
+      "requirement_id": "DER-BOOT-003",
+      "requirement": "重启后默认唤醒词仍可用",
+      "source_kind": "historical_runner",
+      "source_section": "执行基线",
+      "source_text": "启动后默认待机态可再次唤醒",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BASE",
+      "requirement_id": "DER-BASE-001",
+      "requirement": "默认唤醒词可进入交互态",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 唤醒验证",
+      "source_text": "默认唤醒词一直生效，如果测试命令词或需要设备进入识别模式时，可使用默认唤醒词唤醒设备",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BASE",
+      "requirement_id": "DER-BASE-002",
+      "requirement": "超时退出后不重新唤醒的直接命令不响应",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 唤醒验证",
+      "source_text": "通过播报音频唤醒设备后等待超时，结合后续命令验证是否回到待唤醒状态",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BASE",
+      "requirement_id": "DER-BASE-003",
+      "requirement": "超时退出后重新唤醒可恢复正常命令响应",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 唤醒验证",
+      "source_text": "通过播报音频唤醒设备后等待超时，重新唤醒后继续交互",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "VOL",
+      "requirement_id": "DER-VOL-001",
+      "requirement": "增大音量命令单步反馈正确",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 增大音量",
+      "source_text": "大声点 -> 好的",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "VOL",
+      "requirement_id": "DER-VOL-002",
+      "requirement": "减小音量命令单步反馈正确",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 减小音量",
+      "source_text": "小声点 -> 好的",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "UART",
+      "requirement_id": "DER-UART-001",
+      "requirement": "稳定命令词触发协议发送可被协议口接收",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 串口配置",
+      "source_text": "协议串口就检测协议输出",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "UART",
+      "requirement_id": "DER-UART-002",
+      "requirement": "日志口包含 asrKw、playId 等关键字段",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 串口配置",
+      "source_text": "协议串口和日志串口，协议串口就检测协议输出的",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "UART",
+      "requirement_id": "DER-UART-003",
+      "requirement": "清除遥控器链路具备稳定日志与协议可观测性",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 清除遥控器",
+      "source_text": "清除遥控器 -> 55 AA 05 01 16 00 18 AC",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "POWER",
+      "requirement_id": "DER-POWER-001",
+      "requirement": "上下电后日志恢复且设备回到可交互状态",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 掉电配置",
+      "source_text": "掉电配置需要结合硬断电",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "DER-FACT-001",
+      "requirement": "恢复出厂入口可达",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 恢复出厂模式",
+      "source_text": "恢复出厂模式",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "DER-WORK-001",
+      "requirement": "工作模式设置入口可达",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 设置工作模式",
+      "source_text": "设置工作模式",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "DER-CURTAINMODE-001",
+      "requirement": "窗帘模式设置入口可达",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 设置窗帘模式",
+      "source_text": "设置窗帘模式",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAIN",
+      "requirement_id": "DER-CURTAIN-001",
+      "requirement": "默认窗帘模式下默认窗帘控制词可生效",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置窗帘模式",
+      "source_text": "默认的窗帘模式一直生效，比如窗帘模式是默认的，说打开窗帘可以响应播报",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAIN",
+      "requirement_id": "DER-CURTAIN-002",
+      "requirement": "同意图同义词触发协议一致",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 窗帘同义词",
+      "source_text": "打开窗帘 / 窗帘打开 等同义词",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAIN",
+      "requirement_id": "DER-CURTAIN-003",
+      "requirement": "模式切换后对应模式控制词可生效",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置窗帘模式",
+      "source_text": "使用该模式的对应命令词去交互即可",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAIN",
+      "requirement_id": "DER-CURTAIN-004",
+      "requirement": "不匹配当前模式的控制词不响应",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置窗帘模式",
+      "source_text": "默认的窗帘模式一直生效，比如窗帘模式是默认的，说打开纱帘则不响应播报",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "PHRASE",
+      "requirement_id": "DER-PHRASE-001",
+      "requirement": "词条按语义组执行，不是逐行平铺",
+      "source_kind": "derived_logic",
+      "source_section": "回归策略",
+      "source_text": "词条按语义组组织执行",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "PHRASE",
+      "requirement_id": "DER-PHRASE-002",
+      "requirement": "同义词按等价意图集合校验",
+      "source_kind": "derived_logic",
+      "source_section": "回归策略",
+      "source_text": "同义词按等价意图集合校验",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "PHRASE",
+      "requirement_id": "DER-PHRASE-003",
+      "requirement": "连续未识别后可重唤醒并继续剩余词条",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置类超时逻辑",
+      "source_text": "三个设置模式均有超时时间，如果超时时间内没有播报对应的设置命令，则设置失败，使用设置前的功能",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "SELECTOR",
+      "requirement_id": "DER-SELECTOR-001",
+      "requirement": "候选唤醒词可被设置并稳定唤醒",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置唤醒词",
+      "source_text": "使用刚设置的唤醒词进行唤醒，连续三次。确认设置的唤醒词生效",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "SELECTOR",
+      "requirement_id": "DER-SELECTOR-002",
+      "requirement": "未选中的候选唤醒词不应误唤醒",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置唤醒词",
+      "source_text": "还要验证除默认唤醒词和设置唤醒词外其他唤醒词是否生效，若生效则失败",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "SELECTOR",
+      "requirement_id": "DER-SELECTOR-003",
+      "requirement": "切换候选唤醒词后旧候选应失效",
+      "source_kind": "derived_logic",
+      "source_section": "回归策略",
+      "source_text": "切换候选唤醒词后旧候选应失效",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-001",
+      "requirement": "遥控器配对入口可达并发送配对协议",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 配对遥控器",
+      "source_text": "配对遥控器 -> 55 AA 05 01 12 00 80 AF",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-002",
+      "requirement": "窗口内支持配对成功被动播报",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 配对成功",
+      "source_text": "配对成功 -> 55 AA 05 03 06 01 F8 81",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-003",
+      "requirement": "窗口内支持配对失败被动播报",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 配对失败",
+      "source_text": "配对失败 -> 55 AA 05 03 06 00 78 84",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-004",
+      "requirement": "配对窗口超时后协议注入无效",
+      "source_kind": "historical_reference",
+      "source_section": "历史参考用例 / 遥控器配对",
+      "source_text": "窗口超时后协议注入无效",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-005",
+      "requirement": "清除遥控器链路完整",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 清除遥控器",
+      "source_text": "清除遥控器 -> 55 AA 05 01 16 00 18 AC",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    }
+  ],
+  "behavior_rules": {
+    "boot": {
+      "default_state": "idle",
+      "requires_log_ready": true,
+      "post_boot_ready_delay_s": 4.0
+    },
+    "base": {
+      "wake_timeout_s": 20,
+      "default_wake_word": "你好杜亚",
+      "alternate_wake_words": [
+        "客厅窗帘",
+        "餐厅窗帘",
+        "阳台窗帘",
+        "卧室窗帘",
+        "左边窗帘",
+        "中间窗帘",
+        "右边窗帘"
+      ],
+      "requires_wake_before_command": true
+    },
+    "volume": {
+      "level_count": 4,
+      "default_level": 3,
+      "step_tone_id": "TONE_ID_1",
+      "upper_boundary_tone": "TONE_ID_4",
+      "lower_boundary_tone": "TONE_ID_5",
+      "increase_word": "大声点",
+      "decrease_word": "小声点",
+      "restores_default_after_power_cycle": true,
+      "restores_default_after_factory_reset": true
+    },
+    "uart": {
+      "protocol_port": "/dev/ttyACM2",
+      "protocol_baudrate": 9600,
+      "log_port": "/dev/ttyACM0",
+      "log_baudrate": 115200,
+      "frame_header": "55 AA",
+      "frame_length": 8,
+      "must_validate_links_before_run": true
+    },
+    "power": {
+      "supports_manual_power_cycle": true,
+      "requires_log_recovery_after_power_cycle": true,
+      "wake_word_retained_after_power_cycle": false,
+      "volume_retained_after_power_cycle": false
+    },
+    "factory_reset": {
+      "entry": {
+        "semantic": "恢复出厂模式",
+        "category": "恢复出厂",
+        "mode": "主",
+        "send_protocol": "55 AA 04 01 F0 B0 5B",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      "must_restore_defaults": [
+        "wake_word",
+        "volume",
+        "work_mode",
+        "curtain_mode"
+      ]
+    },
+    "wake_word_setting": {
+      "entry": {
+        "semantic": "设置唤醒词",
+        "category": "设置唤醒词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "进入设置模式",
+        "tone_id": "TONE_ID_9"
+      },
+      "default_wake_word": "你好杜亚",
+      "candidate_wake_words": [
+        "客厅窗帘",
+        "餐厅窗帘",
+        "阳台窗帘",
+        "卧室窗帘",
+        "左边窗帘",
+        "中间窗帘",
+        "右边窗帘"
+      ]
+    },
+    "work_mode_setting": {
+      "entry": {
+        "semantic": "设置工作模式",
+        "category": "设置工作模式",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "进入设置模式",
+        "tone_id": "TONE_ID_9"
+      },
+      "candidates": [
+        {
+          "semantic": "语音模式",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "好的",
+          "tone_id": "TONE_ID_1"
+        },
+        {
+          "semantic": "滴答模式",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "嘀（音效）",
+          "tone_id": "TONE_ID_15"
+        }
+      ],
+      "default_mode": "语音模式"
+    },
+    "curtain_mode_setting": {
+      "entry": {
+        "semantic": "设置窗帘模式",
+        "category": "设置窗帘模式",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "进入设置模式",
+        "tone_id": "TONE_ID_9"
+      },
+      "candidates": [
+        {
+          "semantic": "纱帘模式",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "设置成功",
+          "tone_id": "TONE_ID_10"
+        },
+        {
+          "semantic": "窗纱模式",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "设置成功",
+          "tone_id": "TONE_ID_10"
+        },
+        {
+          "semantic": "布帘模式",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "设置成功",
+          "tone_id": "TONE_ID_10"
+        }
+      ],
+      "default_mode": "窗帘模式"
+    },
+    "selector_mode": {
+      "candidates": [
+        {
+          "semantic": "客厅窗帘",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "在呢",
+          "tone_id": "TONE_ID_0"
+        },
+        {
+          "semantic": "餐厅窗帘",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "在呢",
+          "tone_id": "TONE_ID_0"
+        },
+        {
+          "semantic": "阳台窗帘",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "在呢",
+          "tone_id": "TONE_ID_0"
+        },
+        {
+          "semantic": "卧室窗帘",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "在呢",
+          "tone_id": "TONE_ID_0"
+        },
+        {
+          "semantic": "左边窗帘",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "在呢",
+          "tone_id": "TONE_ID_0"
+        },
+        {
+          "semantic": "中间窗帘",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "在呢",
+          "tone_id": "TONE_ID_0"
+        },
+        {
+          "semantic": "右边窗帘",
+          "category": "命令词",
+          "mode": "主",
+          "send_protocol": "",
+          "recv_protocol": "",
+          "tts_text": "好的",
+          "tone_id": "TONE_ID_1"
+        }
+      ],
+      "default_selector": "客厅窗帘"
+    },
+    "remote_pairing": {
+      "entry": {
+        "semantic": "配对遥控器",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 12 00 80 AF",
+        "recv_protocol": "",
+        "tts_text": "开始配对",
+        "tone_id": "TONE_ID_6"
+      },
+      "clear": {
+        "semantic": "清除遥控器",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 16 00 18 AC",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      "success": {
+        "semantic": "",
+        "category": "播报语",
+        "mode": "被",
+        "send_protocol": "",
+        "recv_protocol": "55 AA 05 03 06 01 F8 81",
+        "tts_text": "配对成功",
+        "tone_id": "TONE_ID_7"
+      },
+      "failure": {
+        "semantic": "",
+        "category": "播报语",
+        "mode": "被",
+        "send_protocol": "",
+        "recv_protocol": "55 AA 05 03 06 00 78 84",
+        "tts_text": "配对失败",
+        "tone_id": "TONE_ID_8"
+      },
+      "requires_active_window": true,
+      "requires_receive_msg": true,
+      "window_timeout_s": 20,
+      "timeout_tone_id": "TONE_ID_2",
+      "success_window_closes_after_result": true,
+      "failure_window_closes_after_result": true
+    },
+    "phrase": {
+      "semantic_count": 47,
+      "requires_semantic_grouping": true
+    },
+    "curtain_control": {
+      "default_mode": "窗帘模式",
+      "groups": {
+        "default": [
+          {
+            "semantic": "打开窗帘",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 01 EA A9",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "窗帘打开",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 01 EA A9",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "窗帘关闭",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 02 EA A3",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "关闭窗帘",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 02 EA A3",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "停止窗帘",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 03 6A A6",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "窗帘停止",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 03 6A A6",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          }
+        ],
+        "cloth": [
+          {
+            "semantic": "打开布帘",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 01 EA A9",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "布帘打开",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 01 EA A9",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "关闭布帘",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 02 EA A3",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "布帘关闭",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 02 EA A3",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "停止布帘",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 03 6A A6",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "布帘停止",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 03 6A A6",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          }
+        ],
+        "sheer": [
+          {
+            "semantic": "打开纱帘",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 01 EA A9",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "纱帘打开",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 01 EA A9",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "关闭纱帘",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 02 EA A3",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "纱帘关闭",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 02 EA A3",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "停止纱帘",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 03 6A A6",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "纱帘停止",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 03 6A A6",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          }
+        ],
+        "window_sheer": [
+          {
+            "semantic": "打开窗纱",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 01 EA A9",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "窗纱打开",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 01 EA A9",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "窗纱关闭",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 02 EA A3",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "关闭窗纱",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 02 EA A3",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "停止窗纱",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 03 6A A6",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          },
+          {
+            "semantic": "窗纱停止",
+            "category": "命令词",
+            "mode": "主",
+            "send_protocol": "55 AA 05 01 01 03 6A A6",
+            "recv_protocol": "",
+            "tts_text": "好的",
+            "tone_id": "TONE_ID_1"
+          }
+        ]
+      }
+    }
+  },
+  "semantic_groups": {
+    "wake_words": [
+      {
+        "semantic": "你好杜亚",
+        "category": "唤醒词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "客厅窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "餐厅窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "阳台窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "卧室窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "左边窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "中间窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "右边窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      }
+    ],
+    "work_mode": [
+      {
+        "semantic": "语音模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "滴答模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "嘀（音效）",
+        "tone_id": "TONE_ID_15"
+      }
+    ],
+    "curtain_mode": [
+      {
+        "semantic": "纱帘模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "设置成功",
+        "tone_id": "TONE_ID_10"
+      },
+      {
+        "semantic": "窗纱模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "设置成功",
+        "tone_id": "TONE_ID_10"
+      },
+      {
+        "semantic": "布帘模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "设置成功",
+        "tone_id": "TONE_ID_10"
+      }
+    ],
+    "selector_mode": [
+      {
+        "semantic": "客厅窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "餐厅窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "阳台窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "卧室窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "左边窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "中间窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "右边窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      }
+    ],
+    "volume": [
+      {
+        "semantic": "大声点",
+        "category": "增大音量",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "小声点",
+        "category": "减小音量",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      }
+    ],
+    "remote_pairing": [
+      {
+        "semantic": "配对遥控器",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 12 00 80 AF",
+        "recv_protocol": "",
+        "tts_text": "开始配对",
+        "tone_id": "TONE_ID_6"
+      },
+      {
+        "semantic": "清除遥控器",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 16 00 18 AC",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "配对遥控器",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 12 00 80 AF",
+        "recv_protocol": "",
+        "tts_text": "开始配对",
+        "tone_id": "TONE_ID_6"
+      },
+      {
+        "semantic": "",
+        "category": "播报语",
+        "mode": "被",
+        "send_protocol": "",
+        "recv_protocol": "55 AA 05 03 06 01 F8 81",
+        "tts_text": "配对成功",
+        "tone_id": "TONE_ID_7"
+      },
+      {
+        "semantic": "",
+        "category": "播报语",
+        "mode": "被",
+        "send_protocol": "",
+        "recv_protocol": "55 AA 05 03 06 00 78 84",
+        "tts_text": "配对失败",
+        "tone_id": "TONE_ID_8"
+      }
+    ],
+    "factory_reset": [
+      {
+        "semantic": "恢复出厂模式",
+        "category": "恢复出厂",
+        "mode": "主",
+        "send_protocol": "55 AA 04 01 F0 B0 5B",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      }
+    ],
+    "phrases": [
+      {
+        "semantic": "你好杜亚",
+        "category": "唤醒词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "客厅窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "餐厅窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "阳台窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "卧室窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "左边窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "中间窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "在呢",
+        "tone_id": "TONE_ID_0"
+      },
+      {
+        "semantic": "右边窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "打开窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "窗帘打开",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "窗帘关闭",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "关闭窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "停止窗帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "窗帘停止",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "打开布帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "布帘打开",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "关闭布帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "布帘关闭",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "停止布帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "布帘停止",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "打开纱帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "纱帘打开",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "关闭纱帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "纱帘关闭",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "停止纱帘",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "纱帘停止",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "打开窗纱",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "窗纱打开",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "窗纱关闭",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "关闭窗纱",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "停止窗纱",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "窗纱停止",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "大声点",
+        "category": "增大音量",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "小声点",
+        "category": "减小音量",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "删除行程",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 0B 10 D6 CF",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "电机换向",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 04 03 74 A6",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "恢复出厂模式",
+        "category": "恢复出厂",
+        "mode": "主",
+        "send_protocol": "55 AA 04 01 F0 B0 5B",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "配对遥控器",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 12 00 80 AF",
+        "recv_protocol": "",
+        "tts_text": "开始配对",
+        "tone_id": "TONE_ID_6"
+      },
+      {
+        "semantic": "清除遥控器",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 16 00 18 AC",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "设置唤醒词",
+        "category": "设置唤醒词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "进入设置模式",
+        "tone_id": "TONE_ID_9"
+      },
+      {
+        "semantic": "设置工作模式",
+        "category": "设置工作模式",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "进入设置模式",
+        "tone_id": "TONE_ID_9"
+      },
+      {
+        "semantic": "语音模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "好的",
+        "tone_id": "TONE_ID_1"
+      },
+      {
+        "semantic": "滴答模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "嘀（音效）",
+        "tone_id": "TONE_ID_15"
+      },
+      {
+        "semantic": "设置窗帘模式",
+        "category": "设置窗帘模式",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "进入设置模式",
+        "tone_id": "TONE_ID_9"
+      },
+      {
+        "semantic": "纱帘模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "设置成功",
+        "tone_id": "TONE_ID_10"
+      },
+      {
+        "semantic": "窗纱模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "设置成功",
+        "tone_id": "TONE_ID_10"
+      },
+      {
+        "semantic": "布帘模式",
+        "category": "命令词",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": "",
+        "tts_text": "设置成功",
+        "tone_id": "TONE_ID_10"
+      }
+    ]
+  },
+  "tones": {
+    "items": [
+      {
+        "name": "TONE_ID_0",
+        "id": 0,
+        "text": "在呢"
+      },
+      {
+        "name": "TONE_ID_1",
+        "id": 1,
+        "text": "好的"
+      },
+      {
+        "name": "TONE_ID_2",
+        "id": 2,
+        "text": "再见"
+      },
+      {
+        "name": "TONE_ID_3",
+        "id": 3,
+        "text": "你好,欢迎使用杜亚窗帘"
+      },
+      {
+        "name": "TONE_ID_4",
+        "id": 4,
+        "text": "音量已最大"
+      },
+      {
+        "name": "TONE_ID_5",
+        "id": 5,
+        "text": "音量已最小"
+      },
+      {
+        "name": "TONE_ID_6",
+        "id": 6,
+        "text": "开始配对"
+      },
+      {
+        "name": "TONE_ID_7",
+        "id": 7,
+        "text": "配对成功"
+      },
+      {
+        "name": "TONE_ID_8",
+        "id": 8,
+        "text": "配对失败"
+      },
+      {
+        "name": "TONE_ID_9",
+        "id": 9,
+        "text": "进入设置模式"
+      },
+      {
+        "name": "TONE_ID_10",
+        "id": 10,
+        "text": "设置成功"
+      },
+      {
+        "name": "TONE_ID_11",
+        "id": 11,
+        "text": "设置失败"
+      },
+      {
+        "name": "TONE_ID_12",
+        "id": 12,
+        "text": "唤醒词设置超时"
+      },
+      {
+        "name": "TONE_ID_13",
+        "id": 13,
+        "text": "进入设置模式"
+      },
+      {
+        "name": "TONE_ID_14",
+        "id": 14,
+        "text": "设置成功"
+      },
+      {
+        "name": "TONE_ID_15",
+        "id": 15,
+        "text": "滴声"
+      },
+      {
+        "name": "TONE_ID_16",
+        "id": 16,
+        "text": "正在设置中"
+      },
+      {
+        "name": "TONE_ID_17",
+        "id": 17,
+        "text": "你好,欢迎使用向日葵窗帘"
+      },
+      {
+        "name": "TONE_ID_18",
+        "id": 18,
+        "text": "请再说一遍"
+      }
+    ]
+  },
+  "word_sheet": {
+    "rows": [
+      {
+        "row_index": 2,
+        "semantic": "你好杜亚",
+        "category": "唤醒词",
+        "tts_text": "在呢",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 3,
+        "semantic": "客厅窗帘",
+        "category": "命令词",
+        "tts_text": "在呢",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 4,
+        "semantic": "餐厅窗帘",
+        "category": "命令词",
+        "tts_text": "在呢",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 5,
+        "semantic": "阳台窗帘",
+        "category": "命令词",
+        "tts_text": "在呢",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 6,
+        "semantic": "卧室窗帘",
+        "category": "命令词",
+        "tts_text": "在呢",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 7,
+        "semantic": "左边窗帘",
+        "category": "命令词",
+        "tts_text": "在呢",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 8,
+        "semantic": "中间窗帘",
+        "category": "命令词",
+        "tts_text": "在呢",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 9,
+        "semantic": "右边窗帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 10,
+        "semantic": "打开窗帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 11,
+        "semantic": "窗帘打开",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 12,
+        "semantic": "窗帘关闭",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 13,
+        "semantic": "关闭窗帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 14,
+        "semantic": "停止窗帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 15,
+        "semantic": "窗帘停止",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 16,
+        "semantic": "打开布帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 17,
+        "semantic": "布帘打开",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 18,
+        "semantic": "关闭布帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 19,
+        "semantic": "布帘关闭",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 20,
+        "semantic": "停止布帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 21,
+        "semantic": "布帘停止",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 22,
+        "semantic": "打开纱帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 23,
+        "semantic": "纱帘打开",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 24,
+        "semantic": "关闭纱帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 25,
+        "semantic": "纱帘关闭",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 26,
+        "semantic": "停止纱帘",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 27,
+        "semantic": "纱帘停止",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 28,
+        "semantic": "打开窗纱",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 29,
+        "semantic": "窗纱打开",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 01 EA A9",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 30,
+        "semantic": "窗纱关闭",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 31,
+        "semantic": "关闭窗纱",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 02 EA A3",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 32,
+        "semantic": "停止窗纱",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 33,
+        "semantic": "窗纱停止",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 01 03 6A A6",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 34,
+        "semantic": "大声点",
+        "category": "增大音量",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 35,
+        "semantic": "小声点",
+        "category": "减小音量",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 36,
+        "semantic": "删除行程",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 0B 10 D6 CF",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 37,
+        "semantic": "电机换向",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 04 03 74 A6",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 38,
+        "semantic": "恢复出厂模式",
+        "category": "恢复出厂",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 04 01 F0 B0 5B",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 39,
+        "semantic": "配对遥控器",
+        "category": "命令词",
+        "tts_text": "开始配对",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 12 00 80 AF",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 40,
+        "semantic": "",
+        "category": "播报语",
+        "tts_text": "配对成功",
+        "mode": "被",
+        "send_protocol": "",
+        "recv_protocol": "55 AA 05 03 06 01 F8 81"
+      },
+      {
+        "row_index": 41,
+        "semantic": "",
+        "category": "播报语",
+        "tts_text": "配对失败",
+        "mode": "被",
+        "send_protocol": "",
+        "recv_protocol": "55 AA 05 03 06 00 78 84"
+      },
+      {
+        "row_index": 42,
+        "semantic": "清除遥控器",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "55 AA 05 01 16 00 18 AC",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 43,
+        "semantic": "设置唤醒词",
+        "category": "设置唤醒词",
+        "tts_text": "进入设置模式",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 44,
+        "semantic": "设置工作模式",
+        "category": "设置工作模式",
+        "tts_text": "进入设置模式",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 45,
+        "semantic": "语音模式",
+        "category": "命令词",
+        "tts_text": "好的",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 46,
+        "semantic": "滴答模式",
+        "category": "命令词",
+        "tts_text": "嘀（音效）",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 47,
+        "semantic": "设置窗帘模式",
+        "category": "设置窗帘模式",
+        "tts_text": "进入设置模式",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 48,
+        "semantic": "纱帘模式",
+        "category": "命令词",
+        "tts_text": "设置成功",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 49,
+        "semantic": "窗纱模式",
+        "category": "命令词",
+        "tts_text": "设置成功",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 50,
+        "semantic": "布帘模式",
+        "category": "命令词",
+        "tts_text": "设置成功",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 51,
+        "semantic": "",
+        "category": "欢迎语",
+        "tts_text": "你好，欢迎使用杜亚窗帘",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      },
+      {
+        "row_index": 52,
+        "semantic": "",
+        "category": "休息语",
+        "tts_text": "再见",
+        "mode": "主",
+        "send_protocol": "",
+        "recv_protocol": ""
+      }
+    ],
+    "wake_words": [
+      "你好杜亚",
+      "设置唤醒词"
+    ],
+    "semantic_count": 47,
+    "source": "word_table"
+  },
+  "reference_cases": {
+    "case_rows": [
+      {
+        "case_id": "TC_CTRL_001",
+        "module": "CTRL",
+        "name": "配对遥控器",
+        "precondition": "设备处于默认待命态",
+        "steps": "唤醒后说【配对遥控器】进入遥控器配置窗口",
+        "expected_result": "进入配置窗口并发送配对协议",
+        "expected_protocol": "55 AA 05 01 12 00 80 AF",
+        "expected_recv_protocol": "",
+        "expected_tone_id": "TONE_ID_6",
+        "expected_tone_text": "开始配对",
+        "priority": "P1",
+        "source": "behavior_rules.remote_pairing.entry"
+      },
+      {
+        "case_id": "TC_CTRL_002",
+        "module": "CTRL",
+        "name": "配对成功-被动播报",
+        "precondition": "已通过语音进入遥控器配置窗口",
+        "steps": "在配对窗口内通过协议串口注入配对成功协议并检查 receive msg 与播报",
+        "expected_result": "窗口内收到 receive msg 并播报配对成功",
+        "expected_protocol": "-",
+        "expected_recv_protocol": "55 AA 05 03 06 01 F8 81",
+        "expected_tone_id": "TONE_ID_7",
+        "expected_tone_text": "配对成功",
+        "priority": "P1",
+        "source": "behavior_rules.remote_pairing.success"
+      },
+      {
+        "case_id": "TC_CTRL_003",
+        "module": "CTRL",
+        "name": "配对失败-被动播报",
+        "precondition": "已通过语音进入遥控器配置窗口",
+        "steps": "在配对窗口内通过协议串口注入配对失败协议并检查 receive msg 与播报",
+        "expected_result": "窗口内收到 receive msg 并播报配对失败",
+        "expected_protocol": "-",
+        "expected_recv_protocol": "55 AA 05 03 06 00 78 84",
+        "expected_tone_id": "TONE_ID_8",
+        "expected_tone_text": "配对失败",
+        "priority": "P1",
+        "source": "behavior_rules.remote_pairing.failure"
+      }
+    ]
+  },
+  "coverage_matrix": [
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-001",
+      "requirement": "唤醒时长为 20s",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "唤醒时长: 20s",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-002",
+      "requirement": "音量档位数为 4",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "音量档位: 4",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-003",
+      "requirement": "初始化默认音量为 3",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "初始化默认音量: 3",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-004",
+      "requirement": "最小音量下溢提示播报为“音量已最小”",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "最小音量下溢提示播报: 音量已最小",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-005",
+      "requirement": "最大音量上溢提示播报为“音量已最大”",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 固件配置",
+      "source_text": "最大音量上溢提示播报: 音量已最大",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-006",
+      "requirement": "mic 模拟增益为 32",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 音频输入配置",
+      "source_text": "mic模拟增益: 32",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-007",
+      "requirement": "mic 数字增益为 2",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 音频输入配置",
+      "source_text": "mic数字增益: 2",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-008",
+      "requirement": "协议串口内部编号为 UART1",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 串口配置",
+      "source_text": "协议串口: UART1",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-009",
+      "requirement": "协议串口波特率为 9600",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 串口配置",
+      "source_text": "协议串口: UART1、波特率9600",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-010",
+      "requirement": "日志串口内部编号为 UART0",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 串口配置",
+      "source_text": "日志串口: UART0",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-011",
+      "requirement": "日志串口波特率为 115200",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 串口配置",
+      "source_text": "日志串口: UART0、波特率115200",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-012",
+      "requirement": "唤醒词掉电保存为 否",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 掉电配置",
+      "source_text": "唤醒词掉电保存: 否",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-013",
+      "requirement": "音量掉电保存为 否",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 掉电配置",
+      "source_text": "音量掉电保存: 否",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CONFIG",
+      "requirement_id": "CFG-014",
+      "requirement": "合成音频发音人为叶子",
+      "source_kind": "requirement_doc",
+      "source_section": "二、基础配置 / 播报配置",
+      "source_text": "合成音频发音人: 叶子",
+      "acceptance_level": "main",
+      "validation_target": "static_config",
+      "case_strategy": [
+        "static"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "FACT-001",
+      "requirement": "恢复出厂后恢复默认唤醒词",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 恢复出厂设置",
+      "source_text": "需恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "FACT-002",
+      "requirement": "恢复出厂后恢复默认音量",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 恢复出厂设置",
+      "source_text": "需恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "FACT-003",
+      "requirement": "恢复出厂后恢复默认工作模式（语音模式）",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 恢复出厂设置",
+      "source_text": "需恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "FACT-004",
+      "requirement": "恢复出厂后恢复默认窗帘类型（窗帘模式）",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 恢复出厂设置",
+      "source_text": "需恢复默认唤醒词、默认音量、默认工作模式、默认窗帘类型",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-001",
+      "requirement": "默认唤醒词“你好杜亚”一直生效",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置唤醒词",
+      "source_text": "默认唤醒词为“你好杜亚”，一直生效",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-002",
+      "requirement": "其他候选唤醒词默认不能唤醒，通过设置后才能生效",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置唤醒词",
+      "source_text": "其他所有唤醒词默认不能唤醒，通过触发此功能指令后才能生效",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-003",
+      "requirement": "设置唤醒词模式下说具体唤醒词后立即生效并退出设置模式",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置唤醒词",
+      "source_text": "进入设置唤醒词模式后，若用户说了具体唤醒词，这此唤醒词立即生效并退出设置唤醒词模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-004",
+      "requirement": "设置唤醒词模式下说普通控制词可正常响应且不退出设置",
+      "source_kind": "user_confirmed",
+      "source_section": "用户确认 / 2026-04-13 / 设置唤醒词",
+      "source_text": "设置唤醒词模式内，普通控制词本来就会响应；执行控制后仍应保持在设置窗口内，可继续完成唤醒词设置",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WAKEWORD",
+      "requirement_id": "WAKE-005",
+      "requirement": "设置唤醒词模式超时后自动退出",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置唤醒词",
+      "source_text": "进入设置唤醒词模式后，若超时退出识别模式，则也自动退出设置唤醒词模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-001",
+      "requirement": "工作模式分为语音模式和嘀嗒模式，默认工作模式为 语音模式",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置工作模式",
+      "source_text": "工作模式分为语音模式和嘀嗒模式，语音模式所有提示音正常播报，嘀嗒模式所有提示音播报嘀（音效），默认为语音模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-002",
+      "requirement": "未进入设置工作模式时，说语音模式或嘀嗒模式不响应",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置工作模式",
+      "source_text": "未进入设置工作模式，用户说语音模式或嘀嗒模式不响应",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-003",
+      "requirement": "进入设置工作模式后，说语音模式或嘀嗒模式可切换到对应模式并退出设置",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置工作模式",
+      "source_text": "进入设置工作模式后，若用户说了语音模式或嘀嗒模式，则切换到对应模式并退出设置工作模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-004",
+      "requirement": "进入设置工作模式后，说普通控制词可正常响应且不影响后续模式设置",
+      "source_kind": "user_confirmed",
+      "source_section": "用户确认 / 2026-04-13 / 设置工作模式",
+      "source_text": "设置工作模式窗口内，普通控制词本来就会响应；执行控制后仍应保持可继续完成模式设置",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "WORK-005",
+      "requirement": "设置工作模式超时后自动退出",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置工作模式",
+      "source_text": "进入设置工作模式后，若超时退出识别模式，则也自动退出工作模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-001",
+      "requirement": "窗帘模式分为窗帘模式、纱帘/窗纱模式、布帘模式，默认窗帘模式为 窗帘模式",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "窗帘模式分为：窗帘模式、纱帘/窗纱模式、布帘模式三种，默认为窗帘模式一直生效",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-002",
+      "requirement": "只有对应模式下相关的窗帘类型命令词才能响应",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "只有对应模式下相关的窗帘类型命令词才能响应，例如：窗帘模式下，可响应的命令词有打开窗帘、关闭窗帘和停止窗帘，不可响应的命令词有：打开布帘、关闭纱帘、停止窗纱等",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-003",
+      "requirement": "未进入设置窗帘模式时，说纱帘/窗纱模式、布帘模式不响应",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "未进入设置窗帘模式，用户说纱帘/窗纱模式、布帘模式不响应",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-004",
+      "requirement": "进入设置窗帘模式后，说纱帘/窗纱模式、布帘模式可切换到对应窗帘类型并退出设置",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "进入设置窗帘模式后，若用户说纱帘/窗纱模式、布帘模式则切换到对应窗帘类型并退出设置窗帘模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-005",
+      "requirement": "进入设置窗帘模式后，说普通控制词可正常响应且不影响后续模式设置",
+      "source_kind": "user_confirmed",
+      "source_section": "用户确认 / 2026-04-13 / 设置窗帘模式",
+      "source_text": "设置窗帘模式窗口内，普通控制词本来就会响应；执行控制后仍应保持可继续完成模式设置",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "CURTAIN-006",
+      "requirement": "设置窗帘模式超时后自动退出",
+      "source_kind": "requirement_doc",
+      "source_section": "三、需求补充 / 设置窗帘模式",
+      "source_text": "进入设置窗帘模式后，若超时退出识别模式，则也自动退出设置窗帘模式",
+      "acceptance_level": "main",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BOOT",
+      "requirement_id": "DER-BOOT-001",
+      "requirement": "硬上下电后欢迎语正确播报",
+      "source_kind": "tone_reference",
+      "source_section": "tone.h / 历史参考用例",
+      "source_text": "TONE_ID_3 = 你好,欢迎使用杜亚窗帘",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BOOT",
+      "requirement_id": "DER-BOOT-002",
+      "requirement": "重启后日志链路恢复",
+      "source_kind": "historical_runner",
+      "source_section": "执行基线",
+      "source_text": "重启后日志恢复且设备回到可交互状态",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BOOT",
+      "requirement_id": "DER-BOOT-003",
+      "requirement": "重启后默认唤醒词仍可用",
+      "source_kind": "historical_runner",
+      "source_section": "执行基线",
+      "source_text": "启动后默认待机态可再次唤醒",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BASE",
+      "requirement_id": "DER-BASE-001",
+      "requirement": "默认唤醒词可进入交互态",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 唤醒验证",
+      "source_text": "默认唤醒词一直生效，如果测试命令词或需要设备进入识别模式时，可使用默认唤醒词唤醒设备",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BASE",
+      "requirement_id": "DER-BASE-002",
+      "requirement": "超时退出后不重新唤醒的直接命令不响应",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 唤醒验证",
+      "source_text": "通过播报音频唤醒设备后等待超时，结合后续命令验证是否回到待唤醒状态",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "BASE",
+      "requirement_id": "DER-BASE-003",
+      "requirement": "超时退出后重新唤醒可恢复正常命令响应",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 唤醒验证",
+      "source_text": "通过播报音频唤醒设备后等待超时，重新唤醒后继续交互",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "VOL",
+      "requirement_id": "DER-VOL-001",
+      "requirement": "增大音量命令单步反馈正确",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 增大音量",
+      "source_text": "大声点 -> 好的",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "VOL",
+      "requirement_id": "DER-VOL-002",
+      "requirement": "减小音量命令单步反馈正确",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 减小音量",
+      "source_text": "小声点 -> 好的",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "UART",
+      "requirement_id": "DER-UART-001",
+      "requirement": "稳定命令词触发协议发送可被协议口接收",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 串口配置",
+      "source_text": "协议串口就检测协议输出",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "UART",
+      "requirement_id": "DER-UART-002",
+      "requirement": "日志口包含 asrKw、playId 等关键字段",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 串口配置",
+      "source_text": "协议串口和日志串口，协议串口就检测协议输出的",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "UART",
+      "requirement_id": "DER-UART-003",
+      "requirement": "清除遥控器链路具备稳定日志与协议可观测性",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 清除遥控器",
+      "source_text": "清除遥控器 -> 55 AA 05 01 16 00 18 AC",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "POWER",
+      "requirement_id": "DER-POWER-001",
+      "requirement": "上下电后日志恢复且设备回到可交互状态",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 掉电配置",
+      "source_text": "掉电配置需要结合硬断电",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "FACTORY",
+      "requirement_id": "DER-FACT-001",
+      "requirement": "恢复出厂入口可达",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 恢复出厂模式",
+      "source_text": "恢复出厂模式",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "WORKMODE",
+      "requirement_id": "DER-WORK-001",
+      "requirement": "工作模式设置入口可达",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 设置工作模式",
+      "source_text": "设置工作模式",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAINMODE",
+      "requirement_id": "DER-CURTAINMODE-001",
+      "requirement": "窗帘模式设置入口可达",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 设置窗帘模式",
+      "source_text": "设置窗帘模式",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAIN",
+      "requirement_id": "DER-CURTAIN-001",
+      "requirement": "默认窗帘模式下默认窗帘控制词可生效",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置窗帘模式",
+      "source_text": "默认的窗帘模式一直生效，比如窗帘模式是默认的，说打开窗帘可以响应播报",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAIN",
+      "requirement_id": "DER-CURTAIN-002",
+      "requirement": "同意图同义词触发协议一致",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 窗帘同义词",
+      "source_text": "打开窗帘 / 窗帘打开 等同义词",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAIN",
+      "requirement_id": "DER-CURTAIN-003",
+      "requirement": "模式切换后对应模式控制词可生效",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置窗帘模式",
+      "source_text": "使用该模式的对应命令词去交互即可",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CURTAIN",
+      "requirement_id": "DER-CURTAIN-004",
+      "requirement": "不匹配当前模式的控制词不响应",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置窗帘模式",
+      "source_text": "默认的窗帘模式一直生效，比如窗帘模式是默认的，说打开纱帘则不响应播报",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "PHRASE",
+      "requirement_id": "DER-PHRASE-001",
+      "requirement": "词条按语义组执行，不是逐行平铺",
+      "source_kind": "derived_logic",
+      "source_section": "回归策略",
+      "source_text": "词条按语义组组织执行",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "PHRASE",
+      "requirement_id": "DER-PHRASE-002",
+      "requirement": "同义词按等价意图集合校验",
+      "source_kind": "derived_logic",
+      "source_section": "回归策略",
+      "source_text": "同义词按等价意图集合校验",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "PHRASE",
+      "requirement_id": "DER-PHRASE-003",
+      "requirement": "连续未识别后可重唤醒并继续剩余词条",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置类超时逻辑",
+      "source_text": "三个设置模式均有超时时间，如果超时时间内没有播报对应的设置命令，则设置失败，使用设置前的功能",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "SELECTOR",
+      "requirement_id": "DER-SELECTOR-001",
+      "requirement": "候选唤醒词可被设置并稳定唤醒",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置唤醒词",
+      "source_text": "使用刚设置的唤醒词进行唤醒，连续三次。确认设置的唤醒词生效",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "SELECTOR",
+      "requirement_id": "DER-SELECTOR-002",
+      "requirement": "未选中的候选唤醒词不应误唤醒",
+      "source_kind": "supplement",
+      "source_section": "补充说明 / 设置唤醒词",
+      "source_text": "还要验证除默认唤醒词和设置唤醒词外其他唤醒词是否生效，若生效则失败",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "SELECTOR",
+      "requirement_id": "DER-SELECTOR-003",
+      "requirement": "切换候选唤醒词后旧候选应失效",
+      "source_kind": "derived_logic",
+      "source_section": "回归策略",
+      "source_text": "切换候选唤醒词后旧候选应失效",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "boundary",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-001",
+      "requirement": "遥控器配对入口可达并发送配对协议",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 配对遥控器",
+      "source_text": "配对遥控器 -> 55 AA 05 01 12 00 80 AF",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-002",
+      "requirement": "窗口内支持配对成功被动播报",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 配对成功",
+      "source_text": "配对成功 -> 55 AA 05 03 06 01 F8 81",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-003",
+      "requirement": "窗口内支持配对失败被动播报",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 配对失败",
+      "source_text": "配对失败 -> 55 AA 05 03 06 00 78 84",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-004",
+      "requirement": "配对窗口超时后协议注入无效",
+      "source_kind": "historical_reference",
+      "source_section": "历史参考用例 / 遥控器配对",
+      "source_text": "窗口超时后协议注入无效",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    },
+    {
+      "module": "CTRL",
+      "requirement_id": "DER-CTRL-005",
+      "requirement": "清除遥控器链路完整",
+      "source_kind": "word_table",
+      "source_section": "词条处理 / 清除遥控器",
+      "source_text": "清除遥控器 -> 55 AA 05 01 16 00 18 AC",
+      "acceptance_level": "derived",
+      "validation_target": "runtime_case",
+      "case_strategy": [
+        "positive",
+        "negative",
+        "state_transition"
+      ]
+    }
+  ],
+  "sources": {
+    "requirement_doc": "/home/aitestu/.openclaw/skills/mars-moon/tmp/需求文档.md",
+    "supplement_file": "/home/aitestu/.openclaw/skills/mars-moon/assets/reference/需求和用例补充说明.txt",
+    "word_table": "/home/aitestu/.openclaw/skills/mars-moon/tmp/词条处理.xlsx",
+    "tone_file": "/home/aitestu/.openclaw/skills/mars-moon/tmp/tone.h",
+    "reference_cases": "/home/aitestu/.openclaw/skills/mars-moon/assets/reference/CSK5062_杜亚窗帘_测试用例v2.xlsx",
+    "legacy_spec": "",
+    "legacy_cases": ""
+  },
+  "source_resolution": {
+    "requirement_doc": "discovered_raw",
+    "supplement_file": "asset_reference",
+    "word_table": "discovered_raw",
+    "tone_file": "discovered_raw",
+    "reference_cases": "asset_reference",
+    "legacy_spec": "missing",
+    "legacy_cases": "missing"
+  },
+  "coverage": {
+    "default_policy": "full",
+    "semantic_rows": 47,
+    "module_count": 14,
+    "main_requirement_count": 34,
+    "derived_requirement_count": 30,
+    "reference_case_count": 3
+  },
+  "gaps": [
+    {
+      "type": "runtime_mismatch",
+      "case_id": "TC_CTRL_001",
+      "field": "ctrl_pair_protocol_runtime",
+      "label": "配对遥控器协议",
+      "source_value": "55 AA 05 01 12 00 80 AF",
+      "runtime_value": "55 AA 04 01 12 B2 17",
+      "note": "现网实测协议与词表/生成用例期望不一致，请同步回需求表、词表和结果摘要。"
+    }
+  ]
+}
