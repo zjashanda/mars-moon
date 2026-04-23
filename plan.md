@@ -1010,3 +1010,13 @@
     6. 什么情况下必须停测；
     7. 什么情况下可以继续测。
   - 下一步向用户输出：当前已补入 skill 的内容，以及“给我一个需求后，我如何开始工作的详细工作流”。 
+
+- 进展记录（2026-04-23 14:53）
+  - 已按用户要求再次同步当前修改到远端 Git 仓库，且本次明确包含 `plan.md` 在内的当前文件。
+  - 本轮先在发布缓存仓库生成提交 `56307c3 Sync all current skill files and workflow updates`，后续由于 SSH/HTTPS git transport 超时不稳定，改用 GitHub Contents API 逐文件写入远端。
+  - 当前已确认写入远端的文件包括：
+    1. `README.md`
+    2. `SKILL.md`
+    3. `references/workflow.md`
+    4. `plan.md`
+  - 当前远端 `zjashanda/mars-moon` 的最新提交已更新为：`492d72ede2226f0a259bcac50f2980019649b759`，提交信息为 `Sync all current skill files and workflow updates`。
