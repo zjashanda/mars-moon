@@ -4,46 +4,7 @@
 
 ## Skill layout
 
-- `.git/COMMIT_EDITMSG`
-- `.git/HEAD`
-- `.git/config`
-- `.git/description`
-- `.git/hooks/applypatch-msg.sample`
-- `.git/hooks/commit-msg.sample`
-- `.git/hooks/fsmonitor-watchman.sample`
-- `.git/hooks/post-update.sample`
-- `.git/hooks/pre-applypatch.sample`
-- `.git/hooks/pre-commit.sample`
-- `.git/hooks/pre-merge-commit.sample`
-- `.git/hooks/pre-push.sample`
-- `.git/hooks/pre-rebase.sample`
-- `.git/hooks/pre-receive.sample`
-- `.git/hooks/prepare-commit-msg.sample`
-- `.git/hooks/push-to-checkout.sample`
-- `.git/hooks/update.sample`
-- `.git/index`
-- `.git/info/exclude`
-- `.git/logs/HEAD`
-- `.git/logs/refs/heads/master`
-- `.git/objects/46/237d55059391e6ad56aed56168ab5cd1038c33`
-- `.git/objects/49/de187409512b6cc2f4f3003cee29d4d230cb8f`
-- `.git/objects/60/15afeb90a54c9bd42cdc028e85f62f6c90081a`
-- `.git/objects/96/881a822a1945d68e205a10d988a32f954b72e7`
-- `.git/objects/9f/35cd3861281f2d148faa462b2d9f96aeac2316`
-- `.git/objects/b7/75b7a1497066d588ba37783c88bbd5b3096aab`
-- `.git/objects/bc/5292e7921e8bed66ff5bfb3635af75a908285d`
-- `.git/objects/c0/13cdb98059e6fd9f64040a3ff44f62a08b3056`
-- `.git/objects/eb/858e10559fc61173bc3f17f6849f808db57e96`
-- `.git/objects/ec/769c4d37050f386e526fe598fb2a2f21c6e611`
-- `.git/objects/ed/bd99ab84cc729e89a1f19f923ca379d34955a9`
-- `.git/objects/f8/29dbd50e0fac6b4852df2e841b5f3d5085ae35`
-- `.git/objects/fd/751826bd2ffc0a552e8cfbf7edd498938e1b16`
-- `.git/refs/heads/master`
 - `.gitignore`
-- `.venv/bin/python`
-- `.venv/bin/python3`
-- `.venv/bin/python3.12`
-- `.venv/pyvenv.cfg`
 - `AGENTS.md`
 - `SKILL.md`
 - `agents/openai.yaml`
@@ -52,7 +13,6 @@
 - `generated/CSK5062_杜亚窗帘_测试用例.xlsx`
 - `generated/cases.json`
 - `generated/deviceInfo_dooya.json`
-- `plan.md`
 - `references/checkLogic.txt`
 - `references/current-baseline.md`
 - `references/masr-pillar.md`
@@ -147,9 +107,10 @@ Copy this folder into:
 
 ```text
 ~/.codex/skills/mars-moon
+~/.config/opencode/skills/mars-moon
 ```
 
-Then restart Codex.
+Then restart Codex or OpenCode.
 
 ## Usage and workflow
 
@@ -160,7 +121,7 @@ Then restart Codex.
 - `assets/` 是固定随包资源。
 - `references/` 是随包方法文档，不应依赖 `mars-moon` 目录外文件。
 - `tools/`、`scripts/`、`sample/` 是实际执行入口与运行依赖。
-- 播报链路允许在运行时按需引入两个外部 Codex skill：`listenai-play`、`listenai-laid-installer`；缺失时由当前 bundle 自动从 Git 安装到 `~/.codex/skills/`。
+- 播报链路只依赖一个外部 Codex skill：`listenai-play`（`laid` / `audio-list` 安装脚本随它分发；`listenai-laid-installer` 已于 2026-11-07 归档、不再引用）；缺失时由当前 bundle 自动从 Git 安装到 `~/.codex/skills/`。
 - 烧录基础工具应随 `tools/burn_bundle/windows/` 与 `tools/burn_bundle/linux/` 一起迁移，并从 bundle 复制到 workspace 内使用。
 - 允许运行时从外部路径读入“本次任务的输入文件”，但一旦执行 `prepare`，后续生成、烧录、测试都应只依赖当前 workspace 内的副本。
 
@@ -273,7 +234,7 @@ Then restart Codex.
 
 - 对外展示名使用 `marsMoon`，目录名和显式调用名使用 `mars-moon` / `$mars-moon`。
 - 迁移到其他机器时，直接复制整个 `mars-moon` 目录即可；不要再依赖目录外的参考脚本或参考文档。
-- 若目标机器本地尚未安装 `listenai-play` / `listenai-laid-installer`，首次执行播报链路时会自动从 Git 下载到 `~/.codex/skills/`；也可以提前执行 `python3 scripts/mars_moon_pipeline.py skills --mode ensure`。
+- 若目标机器本地尚未安装 `listenai-play`，首次执行播报链路时会自动从 Git 下载到 `~/.codex/skills/`；也可以提前执行 `python3 scripts/mars_moon_pipeline.py skills --mode ensure`。
 - 远端 skill 有更新时，默认不会在正式测试中自动拉最新；需要显式执行 `python3 scripts/mars_moon_pipeline.py skills --mode refresh` 或在 `run/full/probe` 时加 `--refresh-codex-skills`。
 - 修改 skill 后，至少完成一次本地 `prepare + build` 验证；影响 runner 或串口链路时，再补一次 `run --dry-run` 或实机验证。
 - Git 发布默认只同步 skill 主体内容，不把 `.venv/`、`tmp/`、`result/`、`work/*/` 这类本地运行产物混到主仓库里。

@@ -624,7 +624,7 @@ def add_runner_options(parser: argparse.ArgumentParser, *, include_log_baud: boo
     parser.add_argument("--uart1-frame-header", default="", help="覆盖协议帧头，如 55 AA")
     parser.add_argument("--uart1-frame-length", type=int, default=0, help="覆盖协议帧长度")
     parser.add_argument("--failed-case-reruns", type=int, default=2, help="FAIL 用例收尾重跑次数")
-    parser.add_argument("--refresh-codex-skills", action="store_true", help="执行前先刷新 listenai-play / listenai-laid-installer")
+    parser.add_argument("--refresh-codex-skills", action="store_true", help="执行前先刷新 listenai-play")
 
 
 def add_skill_manager_options(parser: argparse.ArgumentParser) -> None:

@@ -16,7 +16,7 @@
 - `tools/`、`scripts/`、`sample/` 中的内容视为实际执行依赖。
 - 串口默认值集中存放在 `tools/serial_ports.json`，后续长期改口时优先改这一处。
 - 声卡默认值集中存放在 `tools/audio_devices.json`，后续长期改口时优先改这一处。
-- 指定声卡播报依赖外部 Codex skill `listenai-play` / `listenai-laid-installer`；当前 bundle 会在缺失时自动从 Git 安装到 `~/.codex/skills/`，不需要把这两个 skill 再手工打包进 `mars-moon`。
+- 指定声卡播报依赖外部 Codex skill `listenai-play`（内含 `laid` 安装脚本）；当前 bundle 会在缺失时自动从 Git 安装到 `~/.codex/skills/`，不需要把这两个 skill 再手工打包进 `mars-moon`。
 - 运行时允许从任意路径读取“本次任务的输入文件”。
 - 一旦执行 `prepare`，后续 `build / burn / run / probe` 都只依赖当前 workspace 内已经复制好的文件。
 
@@ -200,7 +200,7 @@ python3 ./scripts/mars_moon_pipeline.py burn \
 - 烧录基础工具应随 `mars-moon/tools/burn_bundle/windows/` 或 `mars-moon/tools/burn_bundle/linux/` 一起迁移。
 - `prepare` 后，workspace 内会有 `tools/burn_bundle/` 副本，`burn` 阶段会按当前操作系统优先选择对应子目录，再复制到 `artifacts/burn/` 作为实际执行目录。
 - 当前 `windows/` 与 `linux/` 两套烧录目录都已就位；运行时按当前平台自动选择。
-- 播报链路允许依赖 `~/.codex/skills/listenai-play` 与 `~/.codex/skills/listenai-laid-installer`；缺失时由 `tools/codex_skill_bootstrap.py` 自动安装。
+- 播报链路允许依赖 `~/.codex/skills/listenai-play`；缺失时由 `tools/codex_skill_bootstrap.py` 自动安装。
 - 若本轮涉及新固件，烧录前先把待烧录文件复制到实际烧录目录，删除旧 `app.bin` 后再将新固件统一命名为 `app.bin`，确保目录内固件唯一。
 - 进入烧录模式必须完整执行“断电 -> 进 boot -> 上电 -> 下 boot”；四步中任一步失败都必须回到起点整套重来，不允许从中间步骤续接。
 - 烧录完成后不能直接进入正式测试；必须先连接日志串口重新上电并持续观察 `20s`，若出现自动重启、重复启动、异常复位或明显日志异常，则立即停止测试并上报问题。
