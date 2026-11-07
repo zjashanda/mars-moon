@@ -37,16 +37,6 @@ SKILL_SPECS: dict[str, dict[str, Any]] = {
             "scripts/install_laid_windows.ps1",
         ],
     },
-    "listenai-laid-installer": {
-        "repo": "https://github.com/zjashanda/listenai-laid-installer.git",
-        "branch": "main",
-        "required_files": [
-            "SKILL.md",
-            "README.md",
-            "scripts/install_laid_linux.sh",
-            "scripts/install_laid_windows.ps1",
-        ],
-    },
 }
 
 _RUNTIME_CACHE: dict[str, Any] = {"ensured": False, "refreshed": False, "report": {}}

@@ -12,7 +12,7 @@ description: 自包含的离线语音用例编写与执行 skill。用于把需�
 - `assets/` 是固定随包资源。
 - `references/` 是随包方法文档，不应依赖 `mars-moon` 目录外文件。
 - `tools/`、`scripts/`、`sample/` 是实际执行入口与运行依赖。
-- 播报链路允许在运行时按需引入两个外部 Codex skill：`listenai-play`、`listenai-laid-installer`；缺失时由当前 bundle 自动从 Git 安装到 `~/.codex/skills/`。
+- 播报链路只依赖一个外部 Codex skill：`listenai-play`（`laid` / `audio-list` 安装脚本随它分发；`listenai-laid-installer` 已于 2026-11-07 归档、不再引用）；缺失时由当前 bundle 自动从 Git 安装到 `~/.codex/skills/`。
 - 烧录基础工具应随 `tools/burn_bundle/windows/` 与 `tools/burn_bundle/linux/` 一起迁移，并从 bundle 复制到 workspace 内使用。
 - 允许运行时从外部路径读入“本次任务的输入文件”，但一旦执行 `prepare`，后续生成、烧录、测试都应只依赖当前 workspace 内的副本。
 
@@ -125,7 +125,7 @@ description: 自包含的离线语音用例编写与执行 skill。用于把需�
 
 - 对外展示名使用 `marsMoon`，目录名和显式调用名使用 `mars-moon` / `$mars-moon`。
 - 迁移到其他机器时，直接复制整个 `mars-moon` 目录即可；不要再依赖目录外的参考脚本或参考文档。
-- 若目标机器本地尚未安装 `listenai-play` / `listenai-laid-installer`，首次执行播报链路时会自动从 Git 下载到 `~/.codex/skills/`；也可以提前执行 `python3 scripts/mars_moon_pipeline.py skills --mode ensure`。
+- 若目标机器本地尚未安装 `listenai-play`，首次执行播报链路时会自动从 Git 下载到 `~/.codex/skills/`；也可以提前执行 `python3 scripts/mars_moon_pipeline.py skills --mode ensure`。
 - 远端 skill 有更新时，默认不会在正式测试中自动拉最新；需要显式执行 `python3 scripts/mars_moon_pipeline.py skills --mode refresh` 或在 `run/full/probe` 时加 `--refresh-codex-skills`。
 - 修改 skill 后，至少完成一次本地 `prepare + build` 验证；影响 runner 或串口链路时，再补一次 `run --dry-run` 或实机验证。
 - Git 发布默认只同步 skill 主体内容，不把 `.venv/`、`tmp/`、`result/`、`work/*/` 这类本地运行产物混到主仓库里。
